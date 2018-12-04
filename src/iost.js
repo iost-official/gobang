@@ -2,7 +2,7 @@ const IOST = require('iost');
 const bs58 = require('bs58');
 
 class Client {
-    constructor(host, cid, id, account, seckey) {
+    constructor(host, cid, id, account, seckey, algType) {
         this.host = host;
 
         this.constractID = cid;
@@ -15,24 +15,18 @@ class Client {
             delay: 0,
         }, this.provider);
         this.account = account;
-        this.kp = new IOST.KeyPair(bs58.decode(seckey));
+        this.kp = new IOST.KeyPair(bs58.decode(seckey), algType);
         this.iost.setPublisher(this.account, this.kp);
 
         this.rpc = new IOST.RPC(this.provider);
     }
-    move(step, x, y) {
+    move(x, y, hash) {
         // send a call
-        let handler = this.iost.callABI("iost.token", "transfer", ["iost", "form", "to", "1000.000"]);
+        return this.iost.callABI("gobang.demo", "move", [parseInt(this.gameID), x, y, hash]);
 
-        handler
-            .onPending(function (response) {
-                console.log("tx: " + response.hash + " has sent to node")
-            })
-            .onSuccess(function (response) {
-                console.log("tx has on chain, here is the receipt: " + JSON.stringify(response))
-            })
-            .onFailed(console.log)
-            .send();
+    }
+    newGameWith(op) {
+        return this.iost.callABI("gobang.demo", 'newGameWith', [op]);
     }
     pull() {
         const self = this;

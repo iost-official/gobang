@@ -38,7 +38,7 @@ class Game {
         }
 
         if (!this.isTurn(player)) {
-            return "error player"
+            return "error player " + player + ", should be: " + (this.isTurn(this.a)? this.a:this.b)
         }
 
         if (!this.board.isAvailable(x, y)) {
@@ -97,4 +97,4 @@ class Game {
     }
 }
 
-module.exports = Game
+module.exports = Game;

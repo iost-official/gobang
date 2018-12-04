@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "iost": "^0.0.3",
-    "webpack": "^4.26.1"
+    "iost": "^0.0.5",
+    "webpack": "^4.27.0"
   },
   "devDependencies": {
     "webpack-cli": "^3.1.2"

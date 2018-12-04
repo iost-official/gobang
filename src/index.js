@@ -1,6 +1,8 @@
 const IOST = require('./iost');
 const Game = require('./model');
 
+let page, room, account, seckey, iost, alg, opponent;
+
 class Page {
     constructor(document, player) {
         this.game = new Game("", "");
@@ -15,6 +17,24 @@ class Page {
         this.player = player
     }
 
+    create() {
+        const self = this;
+        iost.newGameWith(opponent.value)
+            .onPending(function (res) {
+            })
+            .onSuccess(function (res) {
+                console.log(res);
+                room.value = JSON.parse(res.returns[0])[0];
+                iost.gameID = parseInt(room.value);
+                pull(page, iost);
+            })
+            .onFailed(function (res) {
+                alert("FAILED: " + JSON.stringify(res));
+            })
+            .send()
+            .listen(1000, 90)
+    }
+
     play(e) {
         let x = parseInt((e.clientX - 20) / 40);//计算鼠标点击的区域，如果点击了（65，65），那么就是点击了（1，1）的位置
         let y = parseInt((e.clientY - 20) / 40);
@@ -24,9 +44,24 @@ class Page {
 
         let rtn = this.game.move(this.player, x, y);
         if (rtn !== 0) {
-            alert(rtn)
+            alert(rtn);
+            return
         }
-        this.refresh()
+        this.refresh();
+
+        iost.move(x, y, this.game.hash)
+            .onPending(function (res) {
+            })
+            .onSuccess(function (res) {
+                setTimeout(pull, 1000, page, iost)
+            })
+            .onFailed(function (res) {
+                alert("FAILED: " + JSON.stringify(res));
+                pull(page, iost);
+            })
+            .send()
+            .listen(1000, 90)
+
     }
 
     drawRect() {//页面加载完毕调用函数，初始化棋盘
@@ -52,9 +87,6 @@ class Page {
             else if (chess === 0) {
                 this.context.drawImage(this.img_b, x * 40 + 20, y * 40 + 20);
             }
-            // this.chess.move(chess, x, y)
-
-            // judge(x, y, chess);
         }
     }
 
@@ -67,30 +99,50 @@ class Page {
             }
         }
     }
+}
 
-    pull(iost) {
-        let self = this;
+
+function pull(page, iost) {
+    if (page.game.winner !== null) {
+        return
+    }
+    if (!page.game.isTurn(page.player)) {
         iost.pull()
             .then(function (json) {
-                self.game = Game.fromJSON(json.jsonStr);
-                self.refresh()
+                page.game = Game.fromJSON(json.jsonStr);
+                page.refresh();
+                setTimeout(pull, 1000, page, iost)
+            })
+            .catch(function (err) {
+                console.log(JSON.stringify(err));
+                setTimeout(pull, 1000, page, iost)
             })
     }
 }
 
-let page, room, account, seckey, iost;
-
 function create() {
-    page = new Page(document, true);
-    page.refresh();
+    iost = new IOST("http://localhost:20001",
+        "gobang.demo",
+        room.value,
+        account.value,
+        seckey.value,
+        alg.value==="secp"?1:2);
+
+    page = new Page(document, account.value);
+    page.create();
 }
 
 function enter() {
-    page = new Page(document, false);
+    page = new Page(document, account.value);
 
-    iost = new IOST("http://localhost:20001", "gobang.demo", room.value, account.value, seckey.value);
-    console.log(room.value, account.value, seckey.value);
-    page.pull(iost);
+    iost = new IOST("http://localhost:20001",
+        "gobang.demo",
+        room.value,
+        account.value,
+        seckey.value,
+        alg.value==="secp"?1:2);
+
+    pull(page, iost);
 }
 
 function onload() {
@@ -100,6 +152,8 @@ function onload() {
     room = document.getElementById('room');
     account = document.getElementById('account');
     seckey = document.getElementById('seckey');
+    alg = document.getElementById('alg');
+    opponent = document.getElementById('opponent');
 
 }
 
