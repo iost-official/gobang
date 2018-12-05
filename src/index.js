@@ -1,6 +1,9 @@
 const IOST = require('./iost');
 const Game = require('./model');
 
+let host;
+let contractID;
+
 let page, room, account, seckey, iost, alg, opponent;
 
 class Page {
@@ -121,8 +124,8 @@ function pull(page, iost) {
 }
 
 function create() {
-    iost = new IOST("http://localhost:20001",
-        "gobang.demo",
+    iost = new IOST(host.value,
+        contractID.value,
         room.value,
         account.value,
         seckey.value,
@@ -135,8 +138,8 @@ function create() {
 function enter() {
     page = new Page(document, account.value);
 
-    iost = new IOST("http://localhost:20001",
-        "gobang.demo",
+    iost = new IOST(host.value,
+        contractID.value,
         room.value,
         account.value,
         seckey.value,
@@ -154,6 +157,8 @@ function onload() {
     seckey = document.getElementById('seckey');
     alg = document.getElementById('alg');
     opponent = document.getElementById('opponent');
+    host = document.getElementById('host');
+    contractID = document.getElementById('contractID');
 
 }
 
