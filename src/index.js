@@ -1,10 +1,12 @@
-const IOST = require('./iost');
+const Client = require('./client');
+const IOST = require('iost');
 const Game = require('./model');
+const bs58 = require('bs58');
 
 let host;
 let contractID;
 
-let page, room, account, seckey, iost, alg, opponent;
+let page, room, account, seckey, iost, alg, opponent, info;
 
 class Page {
     constructor(document, player) {
@@ -22,8 +24,10 @@ class Page {
 
     create() {
         const self = this;
-        iost.newGameWith(opponent.value)
-            .onPending(function (res) {
+        const txh = iost.newGameWith(opponent.value);
+        info.innerHTML = JSON.stringify(txh.tx) + txh.tx._publish_hash().toString('hex');
+
+            txh.onPending(function (res) {
             })
             .onSuccess(function (res) {
                 console.log(res);
@@ -112,11 +116,12 @@ function pull(page, iost) {
     if (!page.game.isTurn(page.player)) {
         iost.pull()
             .then(function (json) {
-                page.game = Game.fromJSON(json.jsonStr);
+                page.game = Game.fromJSON(json.data);
                 page.refresh();
                 setTimeout(pull, 1000, page, iost)
             })
             .catch(function (err) {
+                if (err === {}) return;
                 console.log(JSON.stringify(err));
                 setTimeout(pull, 1000, page, iost)
             })
@@ -124,12 +129,16 @@ function pull(page, iost) {
 }
 
 function create() {
-    iost = new IOST(host.value,
+
+    let wallet = new IOST.Account(account.value);
+    let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value==="secp"?1:2);
+    wallet.addKeyPair(kp, "active");
+
+    iost = new Client(host.value,
         contractID.value,
         room.value,
-        account.value,
-        seckey.value,
-        alg.value==="secp"?1:2);
+        wallet
+    );
 
     page = new Page(document, account.value);
     page.create();
@@ -138,12 +147,15 @@ function create() {
 function enter() {
     page = new Page(document, account.value);
 
-    iost = new IOST(host.value,
+    let wallet = new IOST.Account(account.value);
+    let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value==="secp"?1:2);
+    wallet.addKeyPair(kp, "active");
+
+    iost = new Client(host.value,
         contractID.value,
         room.value,
-        account.value,
-        seckey.value,
-        alg.value==="secp"?1:2);
+        wallet
+    );
 
     pull(page, iost);
 }
@@ -159,7 +171,7 @@ function onload() {
     opponent = document.getElementById('opponent');
     host = document.getElementById('host');
     contractID = document.getElementById('contractID');
-
+    info = document.getElementById('info');
 }
 
 Window.onload = onload();
