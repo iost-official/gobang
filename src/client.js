@@ -32,7 +32,7 @@ class Client {
     }
     pull() {
         const self = this;
-        return self.rpc.blockchain.getContractStorage(this.constractID, "games" +this.gameID, false)
+        return self.rpc.blockchain.getContractStorage(this.constractID, "games" +this.gameID, true)
     }
 }
 
