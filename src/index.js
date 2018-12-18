@@ -6,7 +6,7 @@ const bs58 = require('bs58');
 let host;
 let contractID;
 
-let page, room, account, seckey, iost, alg, opponent, info;
+let page, room, account, seckey, iost, alg, opponent;
 
 class Page {
     constructor(document, player) {
@@ -23,10 +23,7 @@ class Page {
     }
 
     create() {
-        const self = this;
         const txh = iost.newGameWith(opponent.value);
-        info.innerHTML = JSON.stringify(txh.tx) + txh.tx._publish_hash().toString('hex');
-
             txh.onPending(function (res) {
             })
             .onSuccess(function (res) {
@@ -36,7 +33,7 @@ class Page {
                 pull(page, iost);
             })
             .onFailed(function (res) {
-                alert("FAILED: " + JSON.stringify(res));
+                alert("create FAILED: " + JSON.stringify(res));
             })
             .send()
             .listen(1000, 90)
@@ -51,7 +48,7 @@ class Page {
 
         let rtn = this.game.move(this.player, x, y);
         if (rtn !== 0) {
-            alert(rtn);
+            // alert(rtn);
             return
         }
         this.refresh();
@@ -63,7 +60,7 @@ class Page {
                 setTimeout(pull, 1000, page, iost)
             })
             .onFailed(function (res) {
-                alert("FAILED: " + JSON.stringify(res));
+                // alert("FAILED: " + JSON.stringify(res));
                 pull(page, iost);
             })
             .send()
@@ -171,7 +168,7 @@ function onload() {
     opponent = document.getElementById('opponent');
     host = document.getElementById('host');
     contractID = document.getElementById('contractID');
-    info = document.getElementById('info');
+    // info = document.getElementById('info');
 }
 
 Window.onload = onload();

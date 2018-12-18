@@ -1,8 +1,11 @@
 class Board {
     constructor(b){
+        if (b === undefined) {
+            this.record = {};
+            return
+        }
         this.record = b;
     }
-
     isAvailable(x, y) {
         return this.record[x + "," + y] === undefined
     }
@@ -22,9 +25,10 @@ class Game {
         this.a = a;
         this.b = b;
         this.count = 0;
-        this.board = new Board({});
+        this.board = new Board();
         this.winner = null;
-        this.hash = ""
+        this.hash = "";
+        this.placeHolder = ""
     }
 
     isTurn(player) {
@@ -40,7 +44,6 @@ class Game {
         if (!this.isTurn(player)) {
             return "error player " + player + ", should be: " + (this.isTurn(this.a)? this.a:this.b)
         }
-
         if (!this.board.isAvailable(x, y)) {
             return "this cross has marked"
         }
@@ -88,11 +91,8 @@ class Game {
 
     static fromJSON(json) {
         const obj = JSON.parse(json);
-        let g = new Game(obj.a, obj.b);
-        g.count = obj.count;
-        g.winner = obj.winner;
-        g.hash = obj.hash;
-        g.board = new Board(obj.board.record);
+        let g =  Object.assign(new Game, obj);
+        g.board = Object.assign(new Board, obj.board);
         return g
     }
 }

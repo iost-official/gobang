@@ -20,13 +20,13 @@ class Client {
     move(x, y, hash) {
         // send a call
         let tx = this.iost.callABI(this.constractID, "move", [parseInt(this.gameID), x, y, hash]);
-        this.account.PublishTx(tx);
+        this.account.signTx(tx);
         return new IOST.TxHandler(tx, this.rpc)
 
     }
     newGameWith(op) {
         let tx = this.iost.callABI(this.constractID, 'newGameWith', [op]);
-        this.account.PublishTx(tx);
+        this.account.signTx(tx);
         return new IOST.TxHandler(tx, this.rpc)
 
     }
