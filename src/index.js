@@ -102,6 +102,7 @@ class Page {
                 this.drawChess(this.game.board.color(x, y), x, y)
             }
         }
+        opponent.value = this.game.b
     }
 }
 
@@ -126,6 +127,10 @@ function pull(page, iost) {
 }
 
 function create() {
+    if (opponent.value.length < 1) {
+        alert("illegal opponent!");
+        return
+    }
 
     let wallet = new IOST.Account(account.value);
     let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value==="secp"?1:2);
@@ -142,6 +147,11 @@ function create() {
 }
 
 function enter() {
+    if (room.value.length < 1) {
+        alert("illegal game id!");
+        return
+    }
+
     page = new Page(document, account.value);
 
     let wallet = new IOST.Account(account.value);
