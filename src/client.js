@@ -18,6 +18,11 @@ class Client {
         this.rpc = new IOST.RPC(this.provider);
     }
     move(x, y, hash) {
+        if (this.account === undefined) {
+            alert("you have no account");
+            return
+        }
+
         // send a call
         let tx = this.iost.callABI(this.constractID, "move", [parseInt(this.gameID), x, y, hash]);
         this.account.signTx(tx);
@@ -25,6 +30,11 @@ class Client {
 
     }
     newGameWith(op) {
+        if (this.account === undefined) {
+            alert("you have no account");
+            return
+        }
+
         let tx = this.iost.callABI(this.constractID, 'newGameWith', [op]);
         this.account.signTx(tx);
         return new IOST.TxHandler(tx, this.rpc)

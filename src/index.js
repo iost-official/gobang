@@ -24,8 +24,8 @@ class Page {
 
     create() {
         const txh = iost.newGameWith(opponent.value);
-            txh.onPending(function (res) {
-            })
+        txh.onPending(function (res) {
+        })
             .onSuccess(function (res) {
                 console.log(res);
                 room.value = JSON.parse(res.returns[0])[0];
@@ -53,7 +53,8 @@ class Page {
         }
         this.refresh();
 
-        iost.move(x, y, this.game.hash)
+        const handler = iost.move(x, y, this.game.hash);
+        handler
             .onPending(function (res) {
             })
             .onSuccess(function (res) {
@@ -109,6 +110,7 @@ class Page {
 
 function pull(page, iost) {
     if (page.game.winner !== null) {
+        console.log(page.game);
         return
     }
     if (!page.game.isTurn(page.player)) {
@@ -119,8 +121,8 @@ function pull(page, iost) {
                 setTimeout(pull, 1000, page, iost)
             })
             .catch(function (err) {
-                if (err === {}) return;
                 console.log(JSON.stringify(err));
+                if (err === {}) return;
                 setTimeout(pull, 1000, page, iost)
             })
     }
@@ -132,8 +134,13 @@ function create() {
         return
     }
 
-    let wallet = new IOST.Account(account.value);
-    let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value==="secp"?1:2);
+    let wallet;
+    if (!(account.value.length > 0 && seckey.value.length > 0)) {
+        alert("illegal account settings!")
+    }
+
+    wallet = new IOST.Account(account.value);
+    let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value === "secp" ? 1 : 2);
     wallet.addKeyPair(kp, "active");
 
     iost = new Client(host.value,
@@ -153,11 +160,12 @@ function enter() {
     }
 
     page = new Page(document, account.value);
-
-    let wallet = new IOST.Account(account.value);
-    let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value==="secp"?1:2);
-    wallet.addKeyPair(kp, "active");
-
+    let wallet;
+    if (account.value.length > 0 && seckey.value.length > 0) {
+        wallet = new IOST.Account(account.value);
+        let kp = new IOST.KeyPair(bs58.decode(seckey.value), alg.value === "secp" ? 1 : 2);
+        wallet.addKeyPair(kp, "active");
+    }
     iost = new Client(host.value,
         contractID.value,
         room.value,

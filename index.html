@@ -15,18 +15,19 @@
     </canvas>
 </div>
 <div>
+    <h2>Game Settings</h2>
     <input type="text" id="room" placeholder="game id">
     <input type="button" id="enter" value="Enter Game"> <br />
     <input type="text" id="opponent" placeholder="opponent">
     <input type="button" id="create" value="Create Game">
 </div>
 <div>
-    <p>Wallet Settings：</p>
+    <h2>Wallet Settings：</h2>
     <input type="text" size="40" id="host" placeholder="node url" value="http://47.244.109.92:30001">
     <input type="text" size="72" id="contractID" placeholder="Smart contract ID" value="ContractFWvzaAvrNUUgRL7NupqD5DyjkZf6ZYwGAKR9qrnSSwDS">
     <br />
-    <input type="text" id="account" placeholder="account" value="admin">
-    <input type="text" id="seckey" size="72" placeholder="seckey" value="2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1">
+    <input type="text" id="account" placeholder="account" >
+    <input type="text" id="seckey" size="72" placeholder="seckey" >
     <select id="alg">
         <option value="secp">Secp256k1</option>
         <option value="ed" selected="selected">Ed25519</option>
@@ -34,6 +35,19 @@
 </div>
 <div>
     <p id="info"></p>
+</div>
+
+<div>
+    <h2>How to play</h2>
+    <p>1. Input your IOST account and base58-encoded seckey to wallet settings</p>
+    <p>2.a As a host, input opponent in Game Settings, and click Create Game. Then the game starts and game id appears</p>
+    <p>2.b As a guest, input the game id and click Enter Game twice (it's a bug to be fixed)</p>
+    <p>3. play with your opponent</p>
+    <p><b>Notice</b></p>
+    <p>1. There are bugs when you play with yourself, so opponent should be different from your account</p>
+    <p>2. Please report bugs in github issues</p>
+    <p>Thank you</p>
+
 </div>
 
 </body>
