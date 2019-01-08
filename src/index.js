@@ -175,9 +175,49 @@ function enter() {
     pull(page, iost);
 }
 
+function newAccount() {
+
+    const privkey = '2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1';
+
+    const iost = new IOST.IOST({ // 如果不设置则使用default配置来发交易
+        gasRatio: 1,
+        gasLimit: 1900000,
+        delay:0,
+        expiration: 90,
+    });
+
+    const rpc = new IOST.RPC(new IOST.HTTPProvider(host.value));
+
+    // init admin account
+    const acc = new IOST.Account("admin");
+    const kp = new IOST.KeyPair(bs58.decode(privkey));
+    acc.addKeyPair(kp, "active");
+
+    const name = Math.random().toString(36).substr(2, 13);
+    const tx = iost.newAccount(name, "admin", kp.id, kp.id, 1024, 100);
+    acc.signTx(tx);
+
+    const handler = new IOST.TxHandler(tx, rpc);
+    handler
+        .onPending(function () {
+            alert("request test account")
+        })
+        .onSuccess(function () {
+            account.value = name;
+            seckey.value = privkey;
+        })
+        .onFailed(function (err) {
+            alert("failed :" + JSON.stringify(err));
+        })
+        .send()
+        .listen(1000, 90);
+
+}
+
 function onload() {
     document.getElementById('create').onclick = create;
     document.getElementById('enter').onclick = enter;
+    document.getElementById('new_account').onclick = newAccount;
 
     room = document.getElementById('room');
     account = document.getElementById('account');
