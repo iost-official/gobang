@@ -194,7 +194,7 @@ function newAccount() {
     acc.addKeyPair(kp, "active");
 
     const name = Math.random().toString(36).substr(2, 13);
-    const tx = iost.newAccount(name, "admin", kp.id, kp.id, 1024, 100);
+    const tx = iost.newAccount(name, "admin", kp.id, kp.id, 1024, 100000);
     acc.signTx(tx);
 
     const handler = new IOST.TxHandler(tx, rpc);
