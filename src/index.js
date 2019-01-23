@@ -6,7 +6,7 @@ const bs58 = require('bs58');
 let host;
 let contractID;
 
-let page, room, account, seckey, iost, alg, opponent;
+let page, room, account, seckey, iost, alg, opponent, get_account;
 
 class Page {
     constructor(document, player) {
@@ -177,30 +177,31 @@ function enter() {
 
 function newAccount() {
 
-    const privkey = '2yquS3ySrGWPEKywCPzX4RTJugqRh7kJSo5aehsLYPEWkUxBWA39oMrZ7ZxuM4fgyXYs2cPwh5n8aNNpH5x2VyK1';
+    const privkey = '5RjgD3JZVKZGxj9ZYHRaHhZVtk8MXTXtm5iu8UaW8xsYtceXtc6pcFZgHqGqedSAotiAQ4Kjuov5MU2AzqEB3ApG';
 
     const iost = new IOST.IOST({ // 如果不设置则使用default配置来发交易
         gasRatio: 1,
-        gasLimit: 1900000,
-        delay:0,
+        gasLimit: 200000,
+        delay: 0,
         expiration: 90,
     });
 
     const rpc = new IOST.RPC(new IOST.HTTPProvider(host.value));
 
     // init admin account
-    const acc = new IOST.Account("admin");
+    const acc = new IOST.Account("gobang");
     const kp = new IOST.KeyPair(bs58.decode(privkey));
     acc.addKeyPair(kp, "active");
 
     const name = Math.random().toString(36).substr(2, 13);
-    const tx = iost.newAccount(name, "admin", kp.id, kp.id, 1024, 100000);
+    const tx = iost.newAccount(name, "gobang", kp.id, kp.id, 1024, 100000);
     acc.signTx(tx);
 
     const handler = new IOST.TxHandler(tx, rpc);
     handler
         .onPending(function () {
-            alert("request test account")
+            alert("request test account");
+            get_account.disabled = true;
         })
         .onSuccess(function () {
             account.value = name;
@@ -217,7 +218,9 @@ function newAccount() {
 function onload() {
     document.getElementById('create').onclick = create;
     document.getElementById('enter').onclick = enter;
-    document.getElementById('new_account').onclick = newAccount;
+
+    get_account = document.getElementById('new_account');
+    get_account.onclick = newAccount;
 
     room = document.getElementById('room');
     account = document.getElementById('account');
