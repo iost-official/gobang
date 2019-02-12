@@ -193,7 +193,7 @@ function newAccount() {
     const kp = new IOST.KeyPair(bs58.decode(privkey));
     acc.addKeyPair(kp, "active");
 
-    const name = Math.random().toString(36).substr(2, 13);
+    const name = Math.random().toString(36).substr(2, 12);
     const tx = iost.newAccount(name, "gobangmaker", kp.id, kp.id, 0, 100000);
     acc.signTx(tx);
 
